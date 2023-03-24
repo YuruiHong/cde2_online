@@ -24,8 +24,6 @@ def file_list(request, page_num=1, page_size=5, paginator_width=4):
                 'filter_description': description,
                 'filter_contributor': contributor,
               }
-    print(type(context['filter_contributor']))
-
     if description and description != 'None':
         filtered_records = filtered_records.filter(
             description__icontains=description)
@@ -35,10 +33,7 @@ def file_list(request, page_num=1, page_size=5, paginator_width=4):
 
     # paginator
     context['page_count'] = (filtered_records.count() - 1) // page_size + 1
-    print(context['page_count'])
-    print('filtered counts4:', filtered_records.count())
     context['paginator'] = Paginator(filtered_records, page_size)
-    print(context['paginator'].page_range)
     context['page'] = context['paginator'].page(page_num)
 
     return render(request, 'file_upload/file_list.html', context)
