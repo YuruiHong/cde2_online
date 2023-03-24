@@ -8,7 +8,6 @@ from django.shortcuts import render, redirect
 from .models import File
 from .forms import FileUploadForm, FileUploadModelForm, allowed_ext
 from file_project import settings
-from chemdataextractor import Document, model
 
 # Create your views here.
 
