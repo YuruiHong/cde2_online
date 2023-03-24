@@ -9,7 +9,7 @@
     <ul class="errorlist"></ul>
     {% csrf_token %}
 {{ form.as_p }}
- <input type="button" class="btn btn-info form-control" value="submit" id="btn" />
+<input type="button" class="btn btn-info form-control" value="submit" id="btn" />
 </form>
 <table class="table table-striped" id="result">
 </table>
@@ -30,7 +30,8 @@ $(document).ready(function(){
         // 构建FormData对象
         var form_data = new FormData();
         form_data.append('file', $('#id_file')[0].files[0]);
-        form_data.append('upload_method', $('#id_upload_method').val());
+        form_data.append('description', $('#id_description').val());
+        form_data.append('contributor', $('#id_contributor').val());
         $.ajax({
         url: '/file/ajax_upload/',
         data: form_data,
@@ -47,7 +48,7 @@ $(document).ready(function(){
             }},
         success: function (data) {
             if(data['error_msg']) {
-                var content = '<li>Only jpg, pdf and xlsx files are allowed.</li>';
+                var content = '<li>Only xml, html, htm and pdf are allowed.</li>';
                 $('ul.errorlist').html(content);
             }
             else
@@ -55,7 +56,7 @@ $(document).ready(function(){
             var content= '<thead><tr>' +
             '<th>Name and URL</th>' +
             '<th>Size</th>' +
-            '<th>Upload Method</th>' +
+            '<th>Contributor</th>' +
             '</tr></thead><tbody>';
 
              $.each(data, function(i, item) {
@@ -64,11 +65,11 @@ $(document).ready(function(){
                   "<a href= ' " +
                   item['url'] +
                   " '> " +
-                  item['url'] +
+                  item['description'] +
                   '</a></td><td>' +
                   item['size'] +
                   '</td><td>' +
-                  item['upload_method'] +
+                  item['contributor'] +
                    '</td><tr>'
                 });
              content = content + "</tbody>";
