@@ -1,7 +1,8 @@
-media/files/
+# media/files/
 __pycache__/
 **/migrations
 *.sqlite3
 *.log
 *.temp
 .idea
+.vscode
