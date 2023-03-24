@@ -1,6 +1,6 @@
 import os
-import uuid
 import subprocess
+import uuid
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.template.defaultfilters import filesizeformat
@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect
 from .models import File
 from .forms import FileUploadForm, FileUploadModelForm, allowed_ext
 from file_project import settings
+from chemdataextractor import Document, model
 
 # Create your views here.
 
@@ -114,7 +115,10 @@ def ajax_upload(request):
         if form.is_valid():
             form.save()
             # Obtain the latest file list
-            files = File.objects.all().order_by('-id')
+            files = File.objects.all().order_by('-uploaded_at')
+            subprocess.call(["python3",
+                            settings.BASE_DIR+"/file_upload/worker.py",
+                            settings.BASE_DIR+files[0].file.url])
             data = []
             for file in files:
                 data.append({
@@ -123,9 +127,6 @@ def ajax_upload(request):
                     "size": filesizeformat(file.file.size),
                     "contributor": file.contributor,
                     })
-            subprocess.call(["python3",
-                            settings.BASE_DIR+"/file_upload/worker.py",
-                            settings.BASE_DIR+file.file.url])
             return JsonResponse(data, safe=False)
         else:
             data = {'error_msg': "Only these file formats are allowed: "
