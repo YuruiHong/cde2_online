@@ -20,5 +20,5 @@ urlpatterns = [
 
     # View File List
     path('', views.file_list, name='file_list'),
-
+    path('file_list/', views.file_list, name='file_list'),
 ]

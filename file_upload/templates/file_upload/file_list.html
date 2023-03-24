@@ -2,21 +2,36 @@
 
 {% block content %}
 <h1>Enjoy extracting chemical data within a click!</h1>
+
+<p><a href="/file/upload3/">Upload New File</a></p>
+
 <h3>Current File List</h3>
 {% comment %} <p> <a href="/file/upload1/">RegularFormUpload</a> | <a href="/file/upload2/">ModelFormUpload</a> {% endcomment %}
     {% comment %} | <a href="/file/upload3/">AjaxUpload</a></p> {% endcomment %}
-{% if files %}
+<form action="/file_list" method="get">
+    <label for="description">Description:</label>
+    <input type="text" id="description" name="description" size="5" value="{{ filter_description|default:'' }}">
+    <label for="contributor">Contributor:</label>
+    <input type="text" id="contributor" name="contributor" size="5" value="{{ filter_contributor|default:'' }}">
+    {% comment %} <input type="radio" name="search" id="search" value="fuzzy" {{ checked_fuzzy }}>
+    <label>Fuzzy</label>
+    <input type="radio" name="search" id="search" value="exact" {{ checked_exact }}>
+    <label>Exact</label> {% endcomment %}
+    <input type="submit" value="Search">
+</form>
+{% if page %}
 {% load split %}
 <table class="table table-striped">
-
     <tbody>
     <tr>
         <td>Original File</td>
         <td>Description</td>
-        <td>Filesize</td>
+        <td>File Size</td>
         <td>Contributor</td>
+        <td>Raw Output(json)</td>
+        <td>Time Uploaded</td>
     </tr>
-    {% for file in files %}
+    {% for file in page %}
     <tr>
         <!-- Option 1 <td><a href="{{ file.file.url }}/">{{ file.file.url }}</a></td> -->
         {% comment %} <td><a href="/file/download{{ file.file.url }}/">{{ file.file.url }}</a></td> {% endcomment %}
@@ -26,15 +41,40 @@
         <td>{{ file.description }}</td>
         <td>{{ file.file.size | filesizeformat }}</td>
         <td>{{ file.contributor }}</td>
+        <td><a href="/file/download{{ file.file.url |split:"." | first }}.json/">Download</a> | <a href="{{ file.file.url |split:"." | first }}.json/">Preview</a></td>
+        <td>{{ file.uploaded_at |date:'Y-m-d H:i:s' }}</td>
     </tr>
     {% endfor %}
     </tbody>
 </table>
+<nav aria-label="paginator">
+    <ul class="pagination">
+        {% if page.has_previous %}
+            <a class="page-link" href="/file_list?description={{ filter_description|default:'' }}&contributor={{ filter_contributor|default:'' }}&page_num={{ page.previous_page_number }}">⬅️️</a>
+        {% endif %}
+        {% for i in paginator.page_range %}
+            {% if i == 1 or i == paginator.num_pages or i|add:paginator_width > page.number and i < page.number|add:paginator_width %}
+                {% if i == page.number %}
+                    <a class="page-link" href="/file_list?description={{ filter_description|default:'' }}&contributor={{ filter_contributor|default:'' }}&page_num={{ i }}" style="color: red;">{{ i }}</a>
+                {% else %}
+                    <a class="page-link" href="/file_list?description={{ filter_description|default:'' }}&contributor={{ filter_contributor|default:'' }}&page_num={{ i }}">{{ i }}</a>
+                {% endif %}
+            {% endif %}
+            {% if i > 1 and i < paginator.num_pages %}
+                {% if i|add:paginator_width == page.number or i == page.number|add:paginator_width %}
+                    <a>&emsp;</a>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        {% if page.has_next %}
+            <a class="page-link" href="/file_list?description={{ filter_description|default:'' }}&contributor={{ filter_contributor|default:'' }}&page_num={{ page.next_page_number }}">➡️</a>
+        {% endif %}
+    </ul>
+</nav>
 
 {% else %}
 <p>No files uploaded yet. Please click the button below to upload files.</p>
 {% endif %}
 
-<p><a href="/file/upload3/">Upload New File</a></p>
 
 {% endblock %}

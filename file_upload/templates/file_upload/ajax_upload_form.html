@@ -48,15 +48,17 @@ $(document).ready(function(){
             }},
         success: function (data) {
             if(data['error_msg']) {
-                var content = '<li>Only xml, html, htm and pdf are allowed.</li>';
+                var content = '<li>Only plain texts and pdf are allowed.</li>';
                 $('ul.errorlist').html(content);
             }
             else
             {
             var content= '<thead><tr>' +
-            '<th>Name and URL</th>' +
+            '<th>Original File</th>' +
+            '<th>Description</th>' +
             '<th>Size</th>' +
             '<th>Contributor</th>' +
+            '<th>Raw Output(json)</th>'
             '</tr></thead><tbody>';
 
              $.each(data, function(i, item) {
@@ -65,12 +67,18 @@ $(document).ready(function(){
                   "<a href= ' " +
                   item['url'] +
                   " '> " +
-                  item['description'] +
+                  item['url'].replace(/^.*[\\\/]/, '') +
                   '</a></td><td>' +
+                  item['description'] +
+                  '</td><td>' +
                   item['size'] +
                   '</td><td>' +
                   item['contributor'] +
-                   '</td><tr>'
+                  "</td><td><a href= ' " +
+                  item['url'].replace(/\.[^.]+$/, '.json') +
+                  " '> " +
+                  item['url'].replace(/^.*[\\\/]/, '').replace(/\.[^.]+$/, '.json') +
+                  '</a></td><tr>'
                 });
              content = content + "</tbody>";
              $('#result').html(content);

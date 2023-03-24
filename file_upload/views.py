@@ -1,20 +1,47 @@
-from django.shortcuts import render, redirect
-from . import models
-from .forms import FileUploadForm, FileUploadModelForm, allowed_ext
 import os
 import uuid
 import subprocess
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.template.defaultfilters import filesizeformat
+from django.shortcuts import render, redirect
+from .models import File
+from .forms import FileUploadForm, FileUploadModelForm, allowed_ext
 from file_project import settings
 
 # Create your views here.
 
 
 # Show file list
-def file_list(request):
-    files = models.File.objects.all().order_by("-id")
-    return render(request, 'file_upload/file_list.html', {'files': files})
+def file_list(request, page_num=1, page_size=5, paginator_width=4):
+    objects = File.objects
+    description = request.GET.get('description')
+    contributor = request.GET.get('contributor')
+    page_num = request.GET.get('page_num') or page_num
+    filtered_records = objects.order_by('-id')
+    context = {
+                'paginator_width': paginator_width,
+                'filter_description': description,
+                'filter_contributor': contributor,
+              }
+    print(type(context['filter_contributor']))
+
+    if description and description != 'None':
+        filtered_records = filtered_records.filter(
+            description__icontains=description)
+    if contributor and contributor != 'None':
+        filtered_records = filtered_records.filter(
+            contributor__icontains=contributor)
+
+    # paginator
+    context['page_count'] = (filtered_records.count() - 1) // page_size + 1
+    print(context['page_count'])
+    print('filtered counts4:', filtered_records.count())
+    context['paginator'] = Paginator(filtered_records, page_size)
+    print(context['paginator'].page_range)
+    context['page'] = context['paginator'].page(page_num)
+
+    return render(request, 'file_upload/file_list.html', context)
 
 
 # Regular file upload without using ModelForm
@@ -23,7 +50,7 @@ def file_upload(request):
         form = FileUploadForm(request.POST, request.FILES)
         if form.is_valid():
             # get cleaned data
-            new_file = models.File()
+            new_file = File()
             new_file.file = handle_uploaded_file(form.cleaned_data.get("file"))
             new_file.description = form.cleaned_data.get("description")
             new_file.contributor = form.cleaned_data.get("contributor")
@@ -32,8 +59,8 @@ def file_upload(request):
     else:
         form = FileUploadForm()
 
-    return render(request, 'file_upload/upload_form.html', {'form': form,
-                                                            'heading': 'Upload files with Regular Form'})
+    return render(request, 'file_upload/upload_form.html',
+                  {'form': form, 'heading': 'Upload files with Regular Form'})
 
 
 def handle_uploaded_file(file):
@@ -60,8 +87,8 @@ def model_form_upload(request):
     else:
         form = FileUploadModelForm()
 
-    return render(request, 'file_upload/upload_form.html', {'form': form,
-                                                            'heading': 'Upload files with ModelForm'})
+    return render(request, 'file_upload/upload_form.html',
+                  {'form': form, 'heading': 'Upload files with ModelForm'})
 
 
 # Upload File with ModelForm
@@ -87,7 +114,7 @@ def ajax_upload(request):
         if form.is_valid():
             form.save()
             # Obtain the latest file list
-            files = models.File.objects.all().order_by('-id')
+            files = File.objects.all().order_by('-id')
             data = []
             for file in files:
                 data.append({
@@ -96,9 +123,12 @@ def ajax_upload(request):
                     "size": filesizeformat(file.file.size),
                     "contributor": file.contributor,
                     })
-            subprocess.call(["xdg-open", settings.BASE_DIR+file.file.url])
+            subprocess.call(["python3",
+                            settings.BASE_DIR+"/file_upload/worker.py",
+                            settings.BASE_DIR+file.file.url])
             return JsonResponse(data, safe=False)
         else:
-            data = {'error_msg': "Only these file formats are allowed: " + ", ".join(allowed_ext) + "."}
+            data = {'error_msg': "Only these file formats are allowed: "
+                    + ", ".join(allowed_ext) + "."}
             return JsonResponse(data)
     return JsonResponse({'error_msg': 'only POST method accpeted.'})

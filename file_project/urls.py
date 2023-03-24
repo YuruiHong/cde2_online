@@ -22,4 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('file/', include("file_upload.urls")),
     path('file/', include("file_download.urls")),
+    path('', include("file_upload.urls")),
+    path('home/', include("file_upload.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

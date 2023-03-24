@@ -1,0 +1,3 @@
+ Boc-4-piperidone has a melting point of 73-77 °C, according to ChemSpider. It has a density of 129.1 gcm-3. Completely unrelated, caffeine has a refractive index of 1.679. Let's use this spot to look at the bandgap, Ω. If we use a different material, such as SiO2 (L1), with a high Ω of 2.332(11) meV, at a thickness of 35 pm we can get good results.
+This also works for complicated properties. For L1, the electron mobility is ≤ 1400 cm2V-1s-1.
+Several compounds in one sentence are no issue either. We measured methane, propane, and butane, at a wavelength of 100 Å, 120 Å, and 130 Å, respectively. 
