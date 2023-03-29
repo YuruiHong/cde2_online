@@ -1,34 +1,119 @@
 {% extends "file_upload/base.html" %}
 {% block content %}
-
-{% if heading %}
-<h3>{{ heading }}</h3>
-{% endif %}
-
-<form action="" method="post" enctype="multipart/form-data" id="form">
-    <ul class="errorlist"></ul>
-    {% csrf_token %}
-{{ form.as_p }}
-<input type="button" class="btn btn-info form-control" value="submit" id="btn" />
-</form>
-<table class="table table-striped" id="result">
-</table>
+    {% if heading %}<h3>{{ heading }}</h3>{% endif %}
+    <form action="" method="post" enctype="multipart/form-data" id="form">
+        {% comment %} <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="multiSelectDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float:right">
+                Select Desired Attributes
+            </button>
+            <div class="dropdown-menu" aria-labelledby="multiSelectDropdown">
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="MeltingPoint" checked />
+                    MeltingPoint
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="Compound" />
+                    Compound
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="Apparatus" />
+                    Apparatus
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="UvvisPeak" />
+                    UvvisPeak
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="UvvisSpectrum" />
+                    UvvisSpectrum
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="IrPeak">
+                    IrPeak
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="IrSpectrum">
+                    IrSpectrum
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="NmrPeak">
+                    NmrPeak
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="NmrSpectrum">
+                    NmrSpectrum
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="GlassTransition">
+                    GlassTransition
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="QuantumYield" />
+                    QuantumYield
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="FluorescenceLifetime" />
+                    FluorescenceLifetime
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="FluorescenceSpectrum" />
+                    ElectrochemicalPotential
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="FluorescenceSpectrum" />
+                    NeelTemperature
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="FluorescenceSpectrum" />
+                    CurieTemperature
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="FluorescenceSpectrum" />
+                    InteratomicDistance
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="FluorescenceSpectrum" />
+                    CoordinationNumber
+                </a>
+                <a class="dropdown-item" href="#">
+                    <input type="checkbox" name="selectOption" value="FluorescenceSpectrum" />
+                    CNLabel
+                </a>
+            </div>
+        </div> {% endcomment %}
+        <ul class="errorlist">
+        </ul>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="button"
+               class="btn btn-info form-control"
+               value="submit"
+               id="btn"/>
+    </form>
+    <table class="table table-striped" id="result">
+    </table>
 {% endblock %}
-
-
 {% block js %}
-<script src=" https://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js "></script>
-<script>
+    <script src=" https://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js "></script>
+    <script>
 var csrftoken = $.cookie('csrftoken');
 function csrfSafeMethod(method) {
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
-
+function truncateString(str, num) {
+if (str.length > num) {
+    return str.slice(0, num) + "...";
+} else {
+    return str;
+}
+}
 $(document).ready(function(){
    $('#btn').click(function(e){
         e.preventDefault();
         // 构建FormData对象
         var form_data = new FormData();
+        //convert attributes list to string, seperated by comma
+        form_data.append('attributes', $('#id_attributes').val());
         form_data.append('file', $('#id_file')[0].files[0]);
         form_data.append('description', $('#id_description').val());
         form_data.append('contributor', $('#id_contributor').val());
@@ -56,28 +141,27 @@ $(document).ready(function(){
             var content= '<thead><tr>' +
             '<th>Original File</th>' +
             '<th>Description</th>' +
+            '<th>Attributes</th>' +
             '<th>Size</th>' +
             '<th>Contributor</th>' +
             '<th>Raw Output(json)</th>'
             '</tr></thead><tbody>';
-
+// convert attributes list to string, seperated by comma
              $.each(data, function(i, item) {
                   content = content +
                   '<tr><td>' +
-                  "<a href= ' " +
-                  item['url'] +
-                  " '> " +
-                  item['url'].replace(/^.*[\\\/]/, '') +
+                  "<a href= ' " + item['url'] + " '> " +
+                  truncateString(item['url'].replace(/^.*[\\\/]/, ''), 20) +
                   '</a></td><td>' +
                   item['description'] +
+                  '</td><td>' +
+                  item['attributes'] +
                   '</td><td>' +
                   item['size'] +
                   '</td><td>' +
                   item['contributor'] +
-                  "</td><td><a href= ' " +
-                  item['url'].replace(/\.[^.]+$/, '.json') +
-                  " '> " +
-                  item['url'].replace(/^.*[\\\/]/, '').replace(/\.[^.]+$/, '.json') +
+                  "</td><td><a href= ' " + item['url'].replace(/\.[^.]+$/, '.json') + " '> " +
+                    truncateString(item['url'].replace(/^.*[\\\/]/, '').replace(/\.[^.]+$/, '.json'), 20) +
                   '</a></td><tr>'
                 });
              content = content + "</tbody>";
@@ -87,5 +171,5 @@ $(document).ready(function(){
         });
    });
  });
-  </script>
+    </script>
 {% endblock %}

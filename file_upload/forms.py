@@ -26,12 +26,15 @@ class FileUploadForm(forms.Form):
 class FileUploadModelForm(forms.ModelForm):
     class Meta:
         model = File
-        fields = ('file', 'contributor', 'description')
+        fields = ('file', 'contributor', 'description', 'attributes')
 
         widgets = {
             'contributor': forms.TextInput(attrs={'class': 'form-control'}),
             'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'description': forms.TextInput(attrs={'class': 'form-control'}),
+# use choice in 'Compound', 'Apparatus', 'UvvisPeak', 'UvvisSpectrum', 'IrPeak', 'IrSpectrum', 'NmrPeak', 'NmrSpectrum', 'MeltingPoint', 'GlassTransition', 'QuantumYield', 'FluorescenceLifetime', 'ElectrochemicalPotential', 'NeelTemperature', 'CurieTemperature', 'InteratomicDistance', 'CoordinationNumber', 'CNLabel'
+            'attributes': forms.SelectMultiple(attrs={'class': 'form-control'},
+                choices=(('MeltingPoint', 'MeltingPoint'), ('Compound', 'Compound'), ('Apparatus', 'Apparatus'), ('UvvisPeak', 'UvvisPeak'), ('UvvisSpectrum', 'UvvisSpectrum'), ('IrPeak', 'IrPeak'), ('IrSpectrum', 'IrSpectrum'), ('NmrPeak', 'NmrPeak'), ('NmrSpectrum', 'NmrSpectrum'), ('GlassTransition', 'GlassTransition'), ('QuantumYield', 'QuantumYield'), ('FluorescenceLifetime', 'FluorescenceLifetime'), ('ElectrochemicalPotential', 'ElectrochemicalPotential'), ('NeelTemperature', 'NeelTemperature'), ('CurieTemperature', 'CurieTemperature'), ('InteratomicDistance', 'InteratomicDistance'), ('CoordinationNumber', 'CoordinationNumber'), ('CNLabel', 'CNLabel')))
         }
 
     def clean_file(self):

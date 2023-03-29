@@ -1,0 +1,42 @@
+5,10,15,20-Tetra(4-carboxyphenyl)porphyrin (3).
+m.p. 90°C.
+Melting points were measured in Tetrahydrofuran (THF).
+
+Acetate 
+m.p. 81 °C.
+
+Citrate
+m.p. 105 °C.
+
+Isobutanoate
+m.p. 68 °C.
+
+Isovalerate
+m.p. 61 °C.
+
+2-Methylbutanoate
+m.p.  90 °C.
+
+Acesulfamate m.p. 25°C.
+
+Acetate m.p. 80°C.
+
+Benzoate m.p. 47°C.
+
+Citrate m.p. 72°C.
+
+Glutarate m.p. 39°C.
+
+Ibuprofenate m.p. 69°C.
+
+Isobutanoate m.p. 35°C.
+
+Isovalerate m.p. 61°C.
+
+2-Methylbutanoate m.p. 90°C.
+
+Saccharinate m.p. 69°C.
+
+Salicylate m.p. 50°C.
+
+TFSI m.p. 33°C.

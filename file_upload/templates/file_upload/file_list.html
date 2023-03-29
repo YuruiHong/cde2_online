@@ -37,11 +37,11 @@
         {% comment %} <td><a href="/file/download{{ file.file.url }}/">{{ file.file.url }}</a></td> {% endcomment %}
         <!-- get ext name from url-->
         
-        <td><a href="/file/download{{ file.file.url }}/">{{ file.file.url |split:"/" | last }}</a></td>
+        <td><a href="/file/download{{ file.file.url }}/">{{ file.file.url|split:"/"|last|split:'.'|slice:':-1'|join:'.'|truncatechars:20}}.{{file.file.url|split:"/"|last|split:'.'|last}}</a></td>
         <td>{{ file.description }}</td>
         <td>{{ file.file.size | filesizeformat }}</td>
         <td>{{ file.contributor }}</td>
-        <td><a href="/file/download{{ file.file.url |split:"." | first }}.json/">Download</a> | <a href="{{ file.file.url |split:"." | first }}.json/">Preview</a></td>
+        <td><a href="/file/download{{ file.file.url |split:"." | first }}.json/">Download</a> <a href="{{ file.file.url |split:"." | first }}.json/">Preview</a></td>
         <td>{{ file.uploaded_at |date:'Y-m-d H:i:s' }}</td>
     </tr>
     {% endfor %}

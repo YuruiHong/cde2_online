@@ -15,5 +15,6 @@ def user_directory_path(instance, filename):
 class File(models.Model):
     file = models.FileField(upload_to=user_directory_path, null=True)
     description = models.CharField(max_length=40, null=True)
+    attributes = models.CharField(max_length=200, null=True)
     contributor = models.CharField(max_length=20)
     uploaded_at = models.DateTimeField(auto_now_add=True)

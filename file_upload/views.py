@@ -1,5 +1,4 @@
 import os
-import subprocess
 import uuid
 from django.core.paginator import Paginator
 from django.http import JsonResponse
@@ -8,6 +7,7 @@ from django.shortcuts import render, redirect
 from .models import File
 from .forms import FileUploadForm, FileUploadModelForm, allowed_ext
 from file_project import settings
+from .worker import worker
 
 # Create your views here.
 
@@ -110,14 +110,13 @@ def ajax_upload(request):
             form.save()
             # Obtain the latest file list
             files = File.objects.all().order_by('-uploaded_at')
-            subprocess.call(["python3",
-                            settings.BASE_DIR+"/file_upload/worker.py",
-                            settings.BASE_DIR+files[0].file.url])
+            worker(settings.BASE_DIR+files[0].file.url)
             data = []
             for file in files:
                 data.append({
                     "url": file.file.url,
                     "description": file.description,
+                    "attributes": file.attributes,
                     "size": filesizeformat(file.file.size),
                     "contributor": file.contributor,
                     })
